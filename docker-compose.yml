@@ -1,0 +1,11 @@
+name: fixit-frontend-compose
+services:
+  fixit-frontend:
+    build: .
+    ports:
+      - "3000:3000"
+    environment:
+      - BACKEND_HOST=host.docker.internal
+      - BACKEND_PORTAL=8080
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
