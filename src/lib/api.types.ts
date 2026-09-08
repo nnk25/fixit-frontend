@@ -5,30 +5,44 @@ export interface ApiErrorResponseDto {
   error: string;
 }
 
-/** Standardized DTO representing a todo. */
-export interface TodoResponseDto {
+export interface UserResponseDto {
+  id: number;
+  email: string;
+}
+
+export interface AuthUserResponseDto {
+  id: number;
+  email: string;
+}
+
+/** Standardized DTO representing a task. */
+export interface TaskResponseDto {
   id: string;
   title: string;
   description: string;
   dueDate?: string;
   priority: TaskPriority;
   status: TaskStatus;
+  owner: UserResponseDto;
+  completer?: UserResponseDto;
 }
 
 /**
- * Maps a TodoResponseDto to a Todo.
+ * Maps a TaskResponseDto to a Task.
  *
- * @param dto The TodoResponseDto object.
- * @returns The Todo object.
+ * @param dto The TaskResponseDto object.
+ * @returns The Task object.
  */
-export const todoResponseDtoToTodo = (dto: TodoResponseDto): Task => {
+export const taskResponseDtoToTask = (dto: TaskResponseDto): Task => {
   return {
     id: dto.id,
     title: dto.title,
-    description: dto.description,
+    description: dto.description ?? "",
     dueDate: dto.dueDate ? new Date(dto.dueDate) : undefined,
     priority: dto.priority,
     status: dto.status,
+    owner: dto.owner,
+    completer: dto.completer,
   };
 };
 
@@ -38,7 +52,6 @@ export interface CreateTaskRequestDto {
   description?: string;
   dueDate?: Date;
   priority: TaskPriority;
-  status: TaskStatus;
 }
 
 export interface UpdateTaskRequestDto {

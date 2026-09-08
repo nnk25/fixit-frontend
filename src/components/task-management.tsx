@@ -2,18 +2,24 @@ import { useTasks } from "@/providers/task-provider";
 import { useState } from "react";
 import AppFrame from "./app-frame";
 import { Button } from "./ui/button";
-import { PlusCircle } from "lucide-react";
+import { LogOut, PlusCircle, RefreshCcw } from "lucide-react";
 import UpdateTodoListDialogue from "./task-edit-dialog";
 import DeleteTodoListDialogue from "./task-delete-dialog";
 import CreateTodoDialogue from "./task-create-dialog";
 import TodoCard from "./task-card";
+import { AuthUserResponseDto } from "@/lib/api.types";
 
-function TaskManagement() {
+interface TaskManagementProps {
+  currentUser: AuthUserResponseDto;
+  onLogout: () => Promise<void>;
+}
+
+function TaskManagement({ currentUser, onLogout }: TaskManagementProps) {
   const [isCreateTodoOpen, setIsCreateTodoOpen] = useState(false);
   const [isEditTodoOpen, setIsEditTodoOpen] = useState(false);
   const [isDeleteTodoOpen, setIsDeleteTodoOpen] = useState(false);
 
-  const { tasks, selectedTask, selectTask } = useTasks();
+  const { tasks, selectedTask, selectTask, refresh, loading } = useTasks();
 
   return (
     <AppFrame>
@@ -21,17 +27,24 @@ function TaskManagement() {
         {/* Header */}
         <div className="flex justify-between w-full border-b pt-4">
           <div className="mb-4">
-            <h1 className="text-3xl font-bold mb-2 pr-2">Your Tasks</h1>
+            <h1 className="text-3xl font-bold mb-2 pr-2">Team Tasks</h1>
+            <p className="text-muted-foreground text-sm">Signed in as {currentUser.email}</p>
           </div>
 
           {/* Todo List Management Buttons */}
-          <div className="flex gap-x-2">
-            <p
-              className="text-muted-foreground text-2xl px-2"
-              data-testid="task-count-total"
+          <div className="flex gap-x-2 items-start">
+
+            <Button
+              variant="outline"
+              data-testid="button-refresh-tasks"
+              onClick={() => void refresh()}
+              disabled={loading}
             >
-              {tasks.length}
-            </p>
+              <RefreshCcw className={loading ? "animate-spin" : ""} />
+            </Button>
+            <Button variant="outline" onClick={onLogout}>
+              <LogOut /> Logout
+            </Button>
           </div>
         </div>
 
@@ -40,6 +53,7 @@ function TaskManagement() {
             <TodoCard
               task={todo}
               key={todo.id}
+              currentUser={currentUser}
               editTask={(task) => {
                 selectTask(task.id);
                 setIsEditTodoOpen(true);

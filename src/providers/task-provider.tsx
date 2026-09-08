@@ -71,7 +71,7 @@ export function TodoListProvider({
         throw err;
       }
     },
-    [refresh],
+    [refresh, selectedTask],
   );
 
   /** Delete an existing task. */
@@ -111,11 +111,18 @@ export function TodoListProvider({
           setError(undefined);
           const task = tasks.find((list) => list.id === id);
           if (task !== undefined) {
-            task.status =
-              TaskStatus.OPEN === task?.status
+            const nextStatus =
+              task.status === TaskStatus.OPEN
                 ? TaskStatus.COMPLETE
                 : TaskStatus.OPEN;
-            await callUpdateTask(id, task);
+            const updateRequest: UpdateTaskRequestDto = {
+              title: task.title,
+              description: task.description,
+              dueDate: task.dueDate,
+              priority: task.priority,
+              status: nextStatus,
+            };
+            await callUpdateTask(id, updateRequest);
             await refresh();
           }
         } catch (err) {

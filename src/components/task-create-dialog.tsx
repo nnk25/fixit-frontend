@@ -24,7 +24,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "./ui/select";
-import { TaskPriority, TaskStatus } from "@/types/task";
+import { TaskPriority } from "@/types/task";
 import { CreateTaskRequestDto } from "@/lib/api.types";
 
 interface CreateTodoDialogueProps {
@@ -65,7 +65,6 @@ const CreateTodoDialogue: React.FC<CreateTodoDialogueProps> = ({
         title: title,
         description: description,
         dueDate: dueDate,
-        status: TaskStatus.OPEN,
         priority: priority,
       };
       await createTask(createTaskRequest);

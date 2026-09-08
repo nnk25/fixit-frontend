@@ -37,7 +37,7 @@ export function AppSidebar() {
   return (
     <Sidebar>
       <SidebarHeader>
-        <h1 className="font-bold text-xl pt-1">Devtiro Task App</h1>
+        <h1 className="font-bold text-xl pt-1">FixIt - Task Tracker</h1>
       </SidebarHeader>
       <SidebarContent className="overflow-hidden">
         <SidebarGroup className="border-b">

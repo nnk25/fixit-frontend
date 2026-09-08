@@ -4,15 +4,25 @@ import { Calendar, Edit, Flag, Trash } from "lucide-react";
 import { Button } from "./ui/button";
 import { Task, TaskPriority, TaskStatus } from "@/types/task";
 import { useTasks } from "@/providers/task-provider";
+import { AuthUserResponseDto } from "@/lib/api.types";
 
 interface TodoCardProps {
   task: Task;
+  currentUser: AuthUserResponseDto;
   editTask(task: Task): void;
   deleteTask(task: Task): void;
 }
 
-const TodoCard: React.FC<TodoCardProps> = ({ task, editTask, deleteTask }) => {
+const TodoCard: React.FC<TodoCardProps> = ({
+  task,
+  currentUser,
+  editTask,
+  deleteTask,
+}) => {
   const { toggleTaskStatus } = useTasks();
+  const isOwner = task.owner.id === currentUser.id;
+  const canUncheck =
+    task.status !== TaskStatus.COMPLETE || task.completer?.id === currentUser.id;
 
   const colorFlagByPriority = (priority: TaskPriority) => {
     switch (priority) {
@@ -44,7 +54,12 @@ const TodoCard: React.FC<TodoCardProps> = ({ task, editTask, deleteTask }) => {
       <Checkbox
         className={`w-6 h-6 ${colorCheckboxByStatus(task.status)}`}
         checked={task.status === TaskStatus.COMPLETE}
-        onClick={() => toggleTaskStatus(task.id)}
+        onClick={() => {
+          if (canUncheck) {
+            void toggleTaskStatus(task.id);
+          }
+        }}
+        disabled={!canUncheck}
         data-testid="checkbox-task-status"
       />
 
@@ -54,7 +69,14 @@ const TodoCard: React.FC<TodoCardProps> = ({ task, editTask, deleteTask }) => {
             {task.title}
           </Label>
           <p className="text-muted-foreground text-sm">{task.description}</p>
-          {/*  */}
+          <p className="text-muted-foreground text-xs">
+            Owner: {task.owner.email}
+          </p>
+          {task.completer && task.status === TaskStatus.COMPLETE && (
+            <p className="text-muted-foreground text-xs">
+              Completed by: {task.completer.email}
+            </p>
+          )}
           <div className="flex gap-4 items-center">
             <Button
               variant={"ghost"}
@@ -90,6 +112,7 @@ const TodoCard: React.FC<TodoCardProps> = ({ task, editTask, deleteTask }) => {
             className="hover:bg-red-500"
             variant={"outline"}
             onClick={() => deleteTask(task)}
+            disabled={!isOwner}
           >
             <Trash />
           </Button>

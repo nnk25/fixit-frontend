@@ -12,6 +12,12 @@ export enum TaskPriority {
 }
 
 /** A representation of a task. */
+export interface TaskUser {
+  id: number;
+  email: string;
+}
+
+/** A representation of a task. */
 export interface Task {
   id: string;
   title: string;
@@ -19,4 +25,6 @@ export interface Task {
   dueDate?: Date;
   priority: TaskPriority;
   status: TaskStatus;
+  owner: TaskUser;
+  completer?: TaskUser;
 }
